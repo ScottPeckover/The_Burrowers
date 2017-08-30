@@ -45,7 +45,7 @@ public class Player_Controller : MonoBehaviour {
 
     void OnGUI()
     {
-        GUI.Label(new Rect(10, 10, 200, 20), "Player Velocity:");
-        GUI.Label(new Rect(10, 30, 100, 20), Mathf.Abs(rb2d.velocity.x) + "");
+        GUI.Label(new Rect(10, 10, 200, 20), "Player x_velocity:");
+        GUI.Label(new Rect(10, 30, 100, 20), rb2d.velocity.x + "");
     }
 }
