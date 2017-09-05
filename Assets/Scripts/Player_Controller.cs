@@ -81,8 +81,5 @@ public class Player_Controller : MonoBehaviour {
         GUI.Label(new Rect(10, 30, 100, 20), rb2d.velocity.x + "");
         GUI.Label(new Rect(10, 50, 200, 20), "Player y_velocity:");
         GUI.Label(new Rect(10, 70, 100, 20), rb2d.velocity.y + "");
-
-		GUI.Label(new Rect(10, 100,200, 20), "onGround: "+onGround);
-		GUI.Label(new Rect(10, 120,200, 20), "powerJump: "+powerJump);
     }
 }
