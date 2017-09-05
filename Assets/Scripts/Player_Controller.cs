@@ -66,7 +66,6 @@ public class Player_Controller : MonoBehaviour {
 			onGround = true;
 		else 
 			onGround = false;
-
 		// EO Jump Command
     }
 
