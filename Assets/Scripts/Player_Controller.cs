@@ -9,6 +9,9 @@ public class Player_Controller : MonoBehaviour {
     private Animator animator;
     private SpriteRenderer spriteRenderer;
 
+	// Jump command variables
+	private bool onGround, powerJump;
+
     Rigidbody2D rb2d;
     
     void Start()
@@ -16,6 +19,9 @@ public class Player_Controller : MonoBehaviour {
         rb2d = GetComponent<Rigidbody2D> ();
         animator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+
+		onGround = true;
+//		powerJump = false; // in case we want to add the power jump ability
     }
 
     private void Update()
@@ -39,6 +45,29 @@ public class Player_Controller : MonoBehaviour {
             //rb2d.AddForce(movement * acceleration);
             rb2d.velocity = new Vector2((moveHorizontal * acceleration) + rb2d.velocity.x, rb2d.velocity.y);
         }
+
+		// Jump Command
+		Vector2 position = transform.position; // Get Position
+		if (Input.GetKeyDown (KeyCode.Space)) {
+			/* 	in case we want to add the power jump ability
+			if (!onGround && powerJump){
+				int speed = 3;
+				int direction = (spriteRenderer.flipX)?1:-1;
+				rb2d.velocity = new Vector2 ((direction*speed), 7);
+				powerJump = false;
+			}
+			*/
+			if (onGround) {
+				powerJump = true;
+				rb2d.velocity = new Vector2 (0, 7);
+			} 
+		}
+		if (position.y < -1.5) 
+			onGround = true;
+		else 
+			onGround = false;
+
+		// EO Jump Command
     }
 
     void FixedUpdate ()
@@ -53,5 +82,8 @@ public class Player_Controller : MonoBehaviour {
         GUI.Label(new Rect(10, 30, 100, 20), rb2d.velocity.x + "");
         GUI.Label(new Rect(10, 50, 200, 20), "Player y_velocity:");
         GUI.Label(new Rect(10, 70, 100, 20), rb2d.velocity.y + "");
+
+		GUI.Label(new Rect(10, 100,200, 20), "onGround: "+onGround);
+		GUI.Label(new Rect(10, 120,200, 20), "powerJump: "+powerJump);
     }
 }
