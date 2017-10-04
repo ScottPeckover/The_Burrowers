@@ -5,11 +5,13 @@ using UnityEngine;
 public class Meerkat_Moves : MonoBehaviour {
 
 	public Rigidbody2D rb2d;
+	public float damage;
 	private SpriteRenderer spriteRenderer;
 	private float speed;
 
 	// Use this for initialization
 	void Start () {
+		damage = 1.5f;
 		speed = 0.5f;
 		rb2d.AddForce (new Vector2(speed, 0f));
 		rb2d.velocity = new Vector2 (speed, 0f);
