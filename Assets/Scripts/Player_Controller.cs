@@ -4,13 +4,19 @@ using UnityEngine;
 
 public class Player_Controller : MonoBehaviour {
 
-    public float acceleration;
-    public float maxSpeed;
-    private Animator animator;
+    public float 
+			acceleration,
+			maxSpeed;
+    
+	private Animator animator;
     private SpriteRenderer spriteRenderer;
 
-	// Jump command variables
-	private bool onGround, powerJump;
+	// Movement command variables
+	private bool onGround, powerJump, isAttacking;
+	private float 
+			attackTimer = 0.0f,
+			ATTACK_TIME_MAX = 3.0f,
+			health = 10.0f;
 
     Rigidbody2D rb2d;
     
@@ -21,6 +27,7 @@ public class Player_Controller : MonoBehaviour {
         spriteRenderer = GetComponent<SpriteRenderer>();
 
 		onGround = true;
+		isAttacking = false;
 //		powerJump = false; // in case we want to add the power jump ability
     }
 
@@ -48,7 +55,7 @@ public class Player_Controller : MonoBehaviour {
 
 		// Jump Command
 		Vector2 position = transform.position; // Get Position
-		if (Input.GetKeyDown (KeyCode.Space)) {
+		switch (Input.inputString) {
 			/* 	in case we want to add the power jump ability
 			if (!onGround && powerJump){
 				int speed = 3;
@@ -57,25 +64,52 @@ public class Player_Controller : MonoBehaviour {
 				powerJump = false;
 			}
 			*/
+		case "z":
+		case "Z": // Jump
 			if (onGround) {
 				powerJump = true;
 				rb2d.velocity = new Vector2 (0, 7);
-			} 
+			}
+			break;
+
+		case "x":
+		case "X": // Attack
+			isAttacking = true;
+			rb2d.velocity = new Vector2((spriteRenderer.flipX) ? 7 : -7, 0);
+			break;
 		}
 		if (position.y < -1.5) 
 			onGround = true;
 		else 
 			onGround = false;
 		// EO Jump Command
+
+		stopAttack ();
     }
 
-    void FixedUpdate ()
-    {
-        
-        
-    }
+	private void stopAttack () {
+		if (!isAttacking)
+			return;
 
-    void OnGUI()
+		attackTimer += Time.deltaTime;
+		if (attackTimer >= ATTACK_TIME_MAX) {
+			attackTimer = 0.0f;
+			isAttacking = false;
+		}
+	}
+
+	void OnCollisionEnter2D (Collision2D col) {
+		switch (col.gameObject.tag) {
+		case "Enemy":
+			if (isAttacking)
+				Destroy (col.gameObject);
+			else
+				health -= col.gameObject.GetComponent<Meerkat_Moves>().damage;
+			break;
+		}
+	}
+
+	void OnGUI()
     {
         GUI.Label(new Rect(10, 10, 200, 20), "Player x_velocity:");
         GUI.Label(new Rect(10, 30, 100, 20), rb2d.velocity.x + "");
