@@ -7,6 +7,8 @@ public class Player_Controller : MonoBehaviour {
     public float 
 			acceleration,
 			maxSpeed;
+
+	public bool allPaused;
     
 	private Animator animator;
     private SpriteRenderer spriteRenderer;
@@ -16,7 +18,8 @@ public class Player_Controller : MonoBehaviour {
 	private float 
 			attackTimer = 0.0f,
 			ATTACK_TIME_MAX = 3.0f,
-			health = 10.0f;
+			health = 10.0f,
+			attackHit = 1.0f;
 
     Rigidbody2D rb2d;
     
@@ -28,10 +31,11 @@ public class Player_Controller : MonoBehaviour {
 
 		onGround = true;
 		isAttacking = false;
+		allPaused = false;
 //		powerJump = false; // in case we want to add the power jump ability
     }
 
-    private void Update()
+    void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
             Application.Quit();
@@ -77,6 +81,12 @@ public class Player_Controller : MonoBehaviour {
 			isAttacking = true;
 			rb2d.velocity = new Vector2((spriteRenderer.flipX) ? 7 : -7, 0);
 			break;
+
+		case "p": // Pause
+			Object[] objects = FindObjectsOfType (typeof(GameObject));
+			foreach (GameObject go in objects)
+				go.SendMessage ("OnPausedGame", SendMessageOptions.DontRequireReceiver);
+			break;
 		}
 		if (position.y < -1.5) 
 			onGround = true;
@@ -102,9 +112,13 @@ public class Player_Controller : MonoBehaviour {
 		switch (col.gameObject.tag) {
 		case "Enemy":
 			if (isAttacking)
-				Destroy (col.gameObject);
+				col
+						.gameObject
+					.GetComponent<Enemy>()
+					.reduceHealth(attackHit);
 			else
-				health -= col.gameObject.GetComponent<Meerkat_Moves>().damage;
+				health -= col.gameObject.GetComponent<Enemy>().getDamage();
+			Debug.Log(((isAttacking)?"Attacked: ":"Collision: ")+col.gameObject.GetComponent<Enemy>().getName()+"("+col.gameObject.GetComponent<Enemy>().getHealth()+")");
 			break;
 		}
 	}

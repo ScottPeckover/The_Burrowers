@@ -2,29 +2,29 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Hanging_Spider : MonoBehaviour {
+public class Hanging_Spider : Enemy {
 
-	public Rigidbody2D rb2d;
-	private float direction;
+	public Hanging_Spider() {
+		health = 5.0f;
+		damage = 0.8f;
+
+		name = "Spiderling";
+	}
 
 	// Use this for initialization
 	void Start () {
-		direction = 1f;
+		setSpriteRenderer (GetComponent<SpriteRenderer> ());
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		rb2d.AddForce (new Vector2 (0f, direction));
-	}
-
-	void OnCollisionEnter2D(Collision2D coll) {
-		direction = direction*-1;
-
-		if( coll.gameObject.tag == "Player" ){
-			Physics2D.IgnoreCollision(coll.collider, coll.otherCollider);
-			Debug.Log ("AAAAAAHHHH!!");
-			this.gameObject.GetComponent<SpriteRenderer> ().color = Color.red;
+		if (!isPaused()) {
+			rb2d.AddForce (new Vector2 (0f, getDirection () * getSpeed ()));
+			flash ();
+		} else {
+			rb2d.velocity = new Vector2 (0f, 0f);
 		}
+//		transform.position = Camera.main.WorldToViewportPoint (target.position);
 	}
 
 }
