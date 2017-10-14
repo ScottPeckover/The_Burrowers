@@ -4,17 +4,15 @@ using UnityEngine;
 
 public class Player_Controller : MonoBehaviour {
 
-    public float 
-			acceleration,
-			maxSpeed;
-    
-	private Animator animator;
+    public float acceleration, 
+        maxSpeed;
+    public LayerMask groundLayer;
+    private Animator animator;
     private SpriteRenderer spriteRenderer;
 
 	// Movement command variables
-	private bool onGround, powerJump, isAttacking;
-	private float 
-			attackTimer = 0.0f,
+	private bool onGround, isAttacking;
+	private float attackTimer = 0.0f,
 			ATTACK_TIME_MAX = 3.0f,
 			health = 10.0f;
 
@@ -28,48 +26,65 @@ public class Player_Controller : MonoBehaviour {
 
 		onGround = true;
 		isAttacking = false;
-//		powerJump = false; // in case we want to add the power jump ability
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
+        //GroundChecking
+        Vector2 position = transform.position;
+        Vector2 direction = Vector2.down;
+        float distance = 1.0f;
+
+        RaycastHit2D hit = Physics2D.Raycast(position, direction, distance, groundLayer);
+        if (hit.collider != null)
+        {
+            onGround = true;
+        } else
+            onGround = false;
+
         if (Input.GetKeyDown(KeyCode.Escape))
             Application.Quit();
-        if (rb2d.velocity.x != 0)
-            animator.SetInteger("movement_state",1);
-        if (rb2d.velocity.x > 0)
-            spriteRenderer.flipX = true;
-        else if (rb2d.velocity.x < 0)
-            spriteRenderer.flipX = false;
-        else animator.SetInteger("movement_state", 0);
 
-        animator.SetFloat("movement_speed", (Mathf.Abs(rb2d.velocity.x) + maxSpeed) / maxSpeed);
+        if (onGround)
+        {
+            if (Mathf.Abs(rb2d.velocity.x) > 0.1)
+            {
+                animator.SetFloat("movement_speed", (Mathf.Abs(rb2d.velocity.x) + maxSpeed) / maxSpeed);
+                animator.SetInteger("movement_state",1);
+            }
+                
+            else
+                animator.SetInteger("movement_state", 0);
+        }
+        else
+        {
+            if (rb2d.velocity.y < 0)
+                animator.SetInteger("movement_state", 3);
+        }
+        if (rb2d.velocity.x > 1)
+            spriteRenderer.flipX = true;
+            
+        if (rb2d.velocity.x < -1)
+            spriteRenderer.flipX = false;
+            
+
+        
         //Limits speed of player
         if (!(Mathf.Abs(rb2d.velocity.x) > maxSpeed))
         {
             float moveHorizontal = Input.GetAxis("Horizontal");
             Vector2 movement = new Vector2(moveHorizontal, 0);
-            //rb2d.AddForce(movement * acceleration);
             rb2d.velocity = new Vector2((moveHorizontal * acceleration) + rb2d.velocity.x, rb2d.velocity.y);
         }
 
-		// Jump Command
-		Vector2 position = transform.position; // Get Position
+        // Jump Command
 		switch (Input.inputString) {
-			/* 	in case we want to add the power jump ability
-			if (!onGround && powerJump){
-				int speed = 3;
-				int direction = (spriteRenderer.flipX)?1:-1;
-				rb2d.velocity = new Vector2 ((direction*speed), 7);
-				powerJump = false;
-			}
-			*/
 		case "z":
 		case "Z": // Jump
 			if (onGround) {
-				powerJump = true;
-				rb2d.velocity = new Vector2 (0, 7);
-			}
+				rb2d.velocity = new Vector2 (rb2d.velocity.x, 15);
+                animator.SetInteger("movement_state", 2);
+                }
 			break;
 
 		case "x":
@@ -78,12 +93,6 @@ public class Player_Controller : MonoBehaviour {
 			rb2d.velocity = new Vector2((spriteRenderer.flipX) ? 7 : -7, 0);
 			break;
 		}
-		if (position.y < -1.5) 
-			onGround = true;
-		else 
-			onGround = false;
-		// EO Jump Command
-
 		stopAttack ();
     }
 
@@ -115,5 +124,7 @@ public class Player_Controller : MonoBehaviour {
         GUI.Label(new Rect(10, 30, 100, 20), rb2d.velocity.x + "");
         GUI.Label(new Rect(10, 50, 200, 20), "Player y_velocity:");
         GUI.Label(new Rect(10, 70, 100, 20), rb2d.velocity.y + "");
+        GUI.Label(new Rect(10, 90, 200, 20), "grounded: ");
+        GUI.Label(new Rect(10, 110, 100, 20), onGround + "");
     }
 }
