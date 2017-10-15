@@ -13,7 +13,7 @@ public class Player_Controller : MonoBehaviour {
 	// Movement command variables
 	private bool onGround, isAttacking;
 	private float attackTimer = 0.0f,
-			ATTACK_TIME_MAX = 3.0f,
+			ATTACK_TIME_MAX = 0.5f,
 			health = 10.0f;
 
     Rigidbody2D rb2d;
@@ -50,56 +50,59 @@ public class Player_Controller : MonoBehaviour {
             if (Mathf.Abs(rb2d.velocity.x) > 0.1)
             {
                 animator.SetFloat("movement_speed", (Mathf.Abs(rb2d.velocity.x) + maxSpeed) / maxSpeed);
-                animator.SetInteger("movement_state",1);
+                if (!isAttacking) animator.SetInteger("movement_state",1);
             }
                 
             else
-                animator.SetInteger("movement_state", 0);
+                if (!isAttacking) animator.SetInteger("movement_state", 0);
         }
         else
         {
             if (rb2d.velocity.y < 0)
-                animator.SetInteger("movement_state", 3);
+                if (!isAttacking) animator.SetInteger("movement_state", 3);
         }
         if (rb2d.velocity.x > 1)
             spriteRenderer.flipX = true;
             
         if (rb2d.velocity.x < -1)
             spriteRenderer.flipX = false;
-            
 
-        
+
+
         //Limits speed of player
-        if (!(Mathf.Abs(rb2d.velocity.x) > maxSpeed))
+        if (!isAttacking)
         {
-            float moveHorizontal = Input.GetAxis("Horizontal");
-            Vector2 movement = new Vector2(moveHorizontal, 0);
-            rb2d.velocity = new Vector2((moveHorizontal * acceleration) + rb2d.velocity.x, rb2d.velocity.y);
+            if (!(Mathf.Abs(rb2d.velocity.x) > maxSpeed))
+            {
+                float moveHorizontal = Input.GetAxis("Horizontal");
+                Vector2 movement = new Vector2(moveHorizontal, 0);
+                rb2d.velocity = new Vector2((moveHorizontal * acceleration) + rb2d.velocity.x, rb2d.velocity.y);
+            }
+
+            // Jump Command
+            switch (Input.inputString)
+            {
+                case "z":
+                case "Z": // Jump
+                    if (onGround)
+                    {
+                        rb2d.velocity = new Vector2(rb2d.velocity.x, 15);
+                        if (!isAttacking) animator.SetInteger("movement_state", 2);
+                    }
+                    break;
+
+                case "x":
+                case "X": // Attack
+                    animator.SetInteger("movement_state", 4);
+                    isAttacking = true;
+                    rb2d.velocity = new Vector2((spriteRenderer.flipX) ? 7 : -7, rb2d.velocity.y);
+                    break;
+            }
         }
-
-        // Jump Command
-		switch (Input.inputString) {
-		case "z":
-		case "Z": // Jump
-			if (onGround) {
-				rb2d.velocity = new Vector2 (rb2d.velocity.x, 15);
-                animator.SetInteger("movement_state", 2);
-                }
-			break;
-
-		case "x":
-		case "X": // Attack
-			isAttacking = true;
-			rb2d.velocity = new Vector2((spriteRenderer.flipX) ? 7 : -7, 0);
-			break;
-		}
-		stopAttack ();
+        else stopAttack();
     }
 
 	private void stopAttack () {
-		if (!isAttacking)
-			return;
-
 		attackTimer += Time.deltaTime;
 		if (attackTimer >= ATTACK_TIME_MAX) {
 			attackTimer = 0.0f;
@@ -124,7 +127,7 @@ public class Player_Controller : MonoBehaviour {
         GUI.Label(new Rect(10, 30, 100, 20), rb2d.velocity.x + "");
         GUI.Label(new Rect(10, 50, 200, 20), "Player y_velocity:");
         GUI.Label(new Rect(10, 70, 100, 20), rb2d.velocity.y + "");
-        GUI.Label(new Rect(10, 90, 200, 20), "grounded: ");
-        GUI.Label(new Rect(10, 110, 100, 20), onGround + "");
+        GUI.Label(new Rect(10, 90, 200, 20), "isAttacking: ");
+        GUI.Label(new Rect(10, 110, 100, 20), isAttacking + "");
     }
 }
