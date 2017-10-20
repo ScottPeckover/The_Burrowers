@@ -5,20 +5,16 @@ using UnityEngine;
 public class Player_Controller : MonoBehaviour {
 
     public float acceleration, 
-			maxSpeed;
-    
-	public bool allPaused;
-    
+        maxSpeed;
     public LayerMask groundLayer;
-	private Animator animator;
+    private Animator animator;
     private SpriteRenderer spriteRenderer;
 
 	// Movement command variables
 	private bool onGround, isAttacking;
 	private float attackTimer = 0.0f,
 			ATTACK_TIME_MAX = 0.5f,
-			health = 10.0f,
-			attackHit = 1.0f;
+			health = 10.0f;
 
     Rigidbody2D rb2d;
     
@@ -30,7 +26,6 @@ public class Player_Controller : MonoBehaviour {
 
 		onGround = true;
 		isAttacking = false;
-		allPaused = false;
     }
 
     private void FixedUpdate()
@@ -77,39 +72,33 @@ public class Player_Controller : MonoBehaviour {
         //Limits speed of player
         if (!isAttacking)
         {
-        if (!(Mathf.Abs(rb2d.velocity.x) > maxSpeed))
-        {
-            float moveHorizontal = Input.GetAxis("Horizontal");
-            Vector2 movement = new Vector2(moveHorizontal, 0);
-            rb2d.velocity = new Vector2((moveHorizontal * acceleration) + rb2d.velocity.x, rb2d.velocity.y);
-        }
+            if (!(Mathf.Abs(rb2d.velocity.x) > maxSpeed))
+            {
+                float moveHorizontal = Input.GetAxis("Horizontal");
+                Vector2 movement = new Vector2(moveHorizontal, 0);
+                rb2d.velocity = new Vector2((moveHorizontal * acceleration) + rb2d.velocity.x, rb2d.velocity.y);
+            }
 
-		// Jump Command
+            // Jump Command
             switch (Input.inputString)
             {
-		case "z":
-		case "Z": // Jump
+                case "z":
+                case "Z": // Jump
                     if (onGround)
                     {
                         rb2d.velocity = new Vector2(rb2d.velocity.x, 15);
                         if (!isAttacking) animator.SetInteger("movement_state", 2);
-			}
-			break;
+                    }
+                    break;
 
-		case "x":
-		case "X": // Attack
+                case "x":
+                case "X": // Attack
                     animator.SetInteger("movement_state", 4);
-			isAttacking = true;
+                    isAttacking = true;
                     rb2d.velocity = new Vector2((spriteRenderer.flipX) ? 7 : -7, rb2d.velocity.y);
-			break;
-
-		case "p": // Pause
-			Object[] objects = FindObjectsOfType (typeof(GameObject));
-			foreach (GameObject go in objects)
-				go.SendMessage ("OnPausedGame", SendMessageOptions.DontRequireReceiver);
-			break;
-		}
-    }
+                    break;
+            }
+        }
         else stopAttack();
     }
 
@@ -125,13 +114,9 @@ public class Player_Controller : MonoBehaviour {
 		switch (col.gameObject.tag) {
 		case "Enemy":
 			if (isAttacking)
-				col
-						.gameObject
-					.GetComponent<Enemy>()
-					.reduceHealth(attackHit);
+				Destroy (col.gameObject);
 			else
-				health -= col.gameObject.GetComponent<Enemy>().getDamage();
-			Debug.Log(((isAttacking)?"Attacked: ":"Collision: ")+col.gameObject.GetComponent<Enemy>().getName()+"("+col.gameObject.GetComponent<Enemy>().getHealth()+")");
+				health -= col.gameObject.GetComponent<Meerkat_Moves>().damage;
 			break;
 		}
 	}
