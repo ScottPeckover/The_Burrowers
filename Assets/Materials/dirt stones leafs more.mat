@@ -81,6 +81,6 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _ColorCenter: {r: 1, g: 1, b: 1, a: 1}
-    - _ColorEdge: {r: 1, g: 1, b: 1, a: 1}
+    - _ColorCenter: {r: 0.4044118, g: 0.4044118, b: 0.4044118, a: 1}
+    - _ColorEdge: {r: 0.20588237, g: 0.20588237, b: 0.20588237, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}

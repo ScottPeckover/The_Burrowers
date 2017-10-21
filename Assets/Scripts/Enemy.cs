@@ -10,7 +10,7 @@ public class Enemy : MonoBehaviour {
 				paused;
 	private float 
 	flashTimer = 0f,
-	FLASH_TIME_MAX = 5.0f;
+	FLASH_TIME_MAX = 1.0f;
 
 	protected float
 				health,
@@ -90,7 +90,7 @@ public class Enemy : MonoBehaviour {
 	}
 
 	void OnCollisionEnter2D(Collision2D coll) {
-		Debug.Log (name + " Collided");
+		//Debug.Log (name + " Collided");
 		direction = direction*-1;
 
 		if( coll.gameObject.tag == "Player" ){
