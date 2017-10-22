@@ -5,19 +5,22 @@ using UnityEngine;
 public class Player_Controller : MonoBehaviour {
 
     public float acceleration, 
-			maxSpeed;
+		maxSpeed,
+		gravity;
     
-	public bool allPaused;
+	public bool allPaused, onGround;
     
-    public LayerMask groundLayer;
-    public LayerMask platformLayer;
+	//SerializeField allows variables to be private - but visible in the inspector
+	[SerializeField] private LayerMask groundLayer;
+	[SerializeField] private LayerMask platformLayer;
+	[SerializeField] private LayerMask dirtLayer;
     private Animator animator;
     private SpriteRenderer spriteRenderer;
     private BoxCollider2D boxCollider;
     private Collider2D platformCollider;
 
     // Movement command variables
-    private bool onGround, onPlatform, platformDrop, isAttacking;
+    private bool onPlatform, platformDrop, isAttacking;
 	private float attackTimer = 0.0f,
 			ATTACK_TIME_MAX = 0.5f,
 			health = 10.0f,
@@ -31,9 +34,11 @@ public class Player_Controller : MonoBehaviour {
         animator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         boxCollider = GetComponent<BoxCollider2D>();
+
 		onGround = true;
 		isAttacking = false;
 		allPaused = false;
+		gravity = rb2d.gravityScale;
     }
 
     private void Update()
