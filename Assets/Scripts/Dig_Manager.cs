@@ -12,8 +12,7 @@ public class Dig_Manager : MonoBehaviour {
 	[SerializeField] private LayerMask dirtLayer;
 	private string digDirection = "Down";
 	private bool onDirt;
-
-	GameObject player;
+    
 	Player_Controller playerController;
 
 	Rigidbody2D rb2d;
@@ -23,8 +22,7 @@ public class Dig_Manager : MonoBehaviour {
 		rb2d = GetComponent<Rigidbody2D> ();
 
 		//Allows script to communicate with Player_Controller.cs
-		player = GameObject.Find("Monty");
-		playerController = player.GetComponent<Player_Controller> ();
+		playerController = gameObject.GetComponent<Player_Controller> ();
 		dirtWarning.SetActive (false);
 		onDirt = false; //checks if the player is standing on diggable dirt
 		digging = false; //checks if the player is digging
