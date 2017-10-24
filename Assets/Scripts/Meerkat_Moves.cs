@@ -16,8 +16,9 @@ public class Meerkat_Moves : Enemy {
 	void Start () {
 //		damage = 1.5f;
 //		speed = 0.5f;
-		rb2d.velocity = new Vector2 (getSpeed()*getDirection(), 0f);
-		setSpriteRenderer (GetComponent<SpriteRenderer> ());
+//		rb2d.velocity = new Vector2 (getSpeed()*getDirection(), 0f);
+        rb2d.AddForce(new Vector2(getSpeed() * getDirection(), 0f));
+        setSpriteRenderer (GetComponent<SpriteRenderer> ());
 //		height = (int) gameObject.GetComponent<BoxCollider2D>().size.y;
 	}
 	
