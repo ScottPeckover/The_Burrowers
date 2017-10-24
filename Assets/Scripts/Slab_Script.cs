@@ -23,10 +23,4 @@ public class Slab_Script : MonoBehaviour {
 		rb2d.velocity = new Vector2 (speed*direction, 0);
 	}
 
-	void OnGUI(){
-		GUI.Label(new Rect(10, 170, 70, 20), "Speed: "+speed);
-		GUI.Label(new Rect(80, 170, 70, 20), "Direction: "+direction);
-		GUI.Label(new Rect(170, 170, 140, 20), "Velocity: "+rb2d.velocity);
-		GUI.Label(new Rect(310, 170, 100, 20), "onGround: "+(groundHit.collider!=null));
-	}
 }
