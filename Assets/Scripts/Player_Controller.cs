@@ -31,7 +31,18 @@ public class Player_Controller : MonoBehaviour {
 
     private float moveX = 0f, moveY = 0f;
     Rigidbody2D rb2d;
-    
+
+	private const int
+	STANDING = 0,
+	WALKING = 1,
+	JUMPING = 2,
+	FALLING = 3,
+	ATTACKING = 4;
+
+	private const string
+	MOVEMENT_STATE = "movement_state",
+	MOVEMENT_SPEED = "movement_speed";
+
     void Start()
     {
         rb2d = GetComponent<Rigidbody2D> ();
@@ -76,23 +87,23 @@ public class Player_Controller : MonoBehaviour {
                 Application.Quit();
 
             //Sets sprite animations
-            if (onGround)
+			if (onGround || onElevator.collider!=null)
             {
                 if (Mathf.Abs(rb2d.velocity.x) > 0.1)
                 {
                     //walking
-                    animator.SetFloat("movement_speed", (Mathf.Abs(rb2d.velocity.x) + maxSpeed) / maxSpeed);
-                    if (!isAttacking) animator.SetInteger("movement_state", 1);
+					animator.SetFloat(MOVEMENT_SPEED, (Mathf.Abs(rb2d.velocity.x) + maxSpeed) / maxSpeed);
+					if (!isAttacking) animator.SetInteger(MOVEMENT_STATE, WALKING);
                 }
                 else
-                    if (!isAttacking) animator.SetInteger("movement_state", 0);
+					if (!isAttacking) animator.SetInteger(MOVEMENT_STATE, STANDING);
             }
             else
             {
                 if (rb2d.velocity.y < 0)
                 {
                     //falling
-                    if (!isAttacking) animator.SetInteger("movement_state", 3);
+					if (!isAttacking) animator.SetInteger(MOVEMENT_STATE, FALLING);
                 }
                 if (rb2d.velocity.y > 0.05f)
                 {
@@ -132,15 +143,16 @@ public class Player_Controller : MonoBehaviour {
                     {
                         case "z":
                         case "Z": // Jump
-                            if (onGround && !platformDrop || digManager.IsOnDirt() && !platformDrop)
-                            {
+                            if (	onGround && !platformDrop || // onGround
+									digManager.IsOnDirt() && !platformDrop || // onDirt
+									onElevator.collider!=null && !platformDrop	) { // onElevator
                                 rb2d.velocity = new Vector2(rb2d.velocity.x, 15);
-                                animator.SetInteger("movement_state", 2);
+								animator.SetInteger(MOVEMENT_STATE, JUMPING);
                             }
                             break;
                         case "x":
                         case "X": // Attack
-                            animator.SetInteger("movement_state", 4);
+							animator.SetInteger(MOVEMENT_STATE, ATTACKING);
                             isAttacking = true;
                             rb2d.velocity = new Vector2((spriteRenderer.flipX) ? 7 : -7, rb2d.velocity.y);
                             break;
