@@ -9,9 +9,11 @@ public class Player_Controller : MonoBehaviour {
     public float acceleration, maxSpeed;
     
 	//SerializeField allows private variables to be accessed on inspector
-	[SerializeField] private LayerMask groundLayer;
-	[SerializeField] private LayerMask platformLayer;
-	[SerializeField] private LayerMask dirtLayer;
+	[SerializeField] private LayerMask 
+										groundLayer,
+										platformLayer,
+										dirtLayer,
+										elevatorLayer;
     private Animator animator;
     private SpriteRenderer spriteRenderer;
     private BoxCollider2D boxCollider;
@@ -56,9 +58,12 @@ public class Player_Controller : MonoBehaviour {
             Vector3 position = transform.position;
             Vector2 direction = Vector2.down;
             float distance = 0.8f;
-            RaycastHit2D groundHit = Physics2D.Raycast(position, direction, distance, groundLayer);
-            RaycastHit2D platformHit = Physics2D.Raycast(position, direction, distance, platformLayer);
-            onPlatform = platformHit.collider != null;
+            RaycastHit2D 
+				groundHit = Physics2D.Raycast(position, direction, distance, groundLayer),
+            	platformHit = Physics2D.Raycast(position, direction, distance, platformLayer),
+				onElevator = Physics2D.Raycast(position, direction, distance, elevatorLayer);
+            
+			onPlatform = platformHit.collider != null;
             if (groundHit.collider != null || (onPlatform & rb2d.velocity.y <= 0.05f & !platformDrop) || digManager.IsOnDirt())
             {
                 onGround = true;
@@ -139,13 +144,20 @@ public class Player_Controller : MonoBehaviour {
                             isAttacking = true;
                             rb2d.velocity = new Vector2((spriteRenderer.flipX) ? 7 : -7, rb2d.velocity.y);
                             break;
+
+						case "p":
+						case "P": // Pause Game
+							foreach (GameObject go in FindObjectsOfType(typeof(GameObject)))
+								go.SendMessage("OnPausedGame", SendMessageOptions.DontRequireReceiver);
+							break;
+
+					case "c":
+					case "C": // Elevator Movement
+						if( onElevator.collider!=null )
+							foreach (GameObject go in FindObjectsOfType(typeof(GameObject)))
+								go.SendMessage ("OnElevatorMove", SendMessageOptions.DontRequireReceiver);
+						break;
                     }
-                }
-                if (Input.GetKeyDown(KeyCode.P))
-                {
-                    Object[] objects = FindObjectsOfType(typeof(GameObject));
-                    foreach (GameObject go in objects)
-                        go.SendMessage("OnPausedGame", SendMessageOptions.DontRequireReceiver);
                 }
 
             }
