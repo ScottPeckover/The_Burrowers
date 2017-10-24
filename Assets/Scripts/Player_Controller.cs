@@ -141,13 +141,11 @@ public class Player_Controller : MonoBehaviour {
                             break;
                     }
                 }
-                switch (Input.inputString)
+                if (Input.GetKeyDown(KeyCode.P))
                 {
-                    case "p": // Pause
-                        Object[] objects = FindObjectsOfType(typeof(GameObject));
-                        foreach (GameObject go in objects)
-                            go.SendMessage("OnPausedGame", SendMessageOptions.DontRequireReceiver);
-                        break;
+                    Object[] objects = FindObjectsOfType(typeof(GameObject));
+                    foreach (GameObject go in objects)
+                        go.SendMessage("OnPausedGame", SendMessageOptions.DontRequireReceiver);
                 }
 
             }
@@ -155,11 +153,12 @@ public class Player_Controller : MonoBehaviour {
         } else
         {
             Vector3 moveDirection = gameObject.transform.position - lastPosition;
-            //if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow))
-           // {
+            if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.UpArrow))
+            {
                 moveX = Input.GetAxis("Horizontal");
-               moveY = Input.GetAxis("Vertical");
-          //  }
+                moveY = Input.GetAxis("Vertical");
+
+            }
             if (moveDirection != Vector3.zero)
             {
                 float angle = Mathf.Atan2(moveY, moveX) * Mathf.Rad2Deg;
