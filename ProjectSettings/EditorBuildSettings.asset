@@ -6,10 +6,10 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Main.unity
+    path: Assets/Scenes/Player Base.unity
     guid: 52dba9a5d5763cc469cc93d66f93f6b2
   - enabled: 1
-    path: Assets/Scenes/Map.unity
+    path: Assets/Scenes/Fast Travel Map.unity
     guid: 37758f692404e1547aaa023065a48220
   - enabled: 1
     path: Assets/Scenes/Level 1.unity
