@@ -33,12 +33,13 @@ public class Player_Controller : MonoBehaviour {
     private float moveX = 0f, moveY = 0f;
     Rigidbody2D rb2d;
 
-	private const int
-	STANDING = 0,
-	WALKING = 1,
-	JUMPING = 2,
-	FALLING = 3,
-	ATTACKING = 4;
+    private const int
+    STANDING = 0,
+    WALKING = 1,
+    JUMPING = 2,
+    FALLING = 3,
+    ATTACKING = 4,
+    DIGGING = 5;
 
 	private const string
 	MOVEMENT_STATE = "movement_state",
@@ -57,12 +58,11 @@ public class Player_Controller : MonoBehaviour {
 		gravity = rb2d.gravityScale;
         lastPosition = transform.position;
         originalRotation = transform.rotation;
+        digManager = gameObject.GetComponent<Dig_Manager> ();
     }
 
     private void Update()
     {
-		//Allows script to communicate with Dig Manager.cs
-		digManager = gameObject.GetComponent<Dig_Manager> ();
         if (!digManager.digging)
         {
             transform.rotation = originalRotation;
@@ -192,6 +192,9 @@ public class Player_Controller : MonoBehaviour {
             else stopAttack();
         } else
         {
+            if (spriteRenderer.flipX == true)
+                spriteRenderer.flipX = false;
+            animator.SetInteger(MOVEMENT_STATE, DIGGING);
             Vector3 moveDirection = gameObject.transform.position - lastPosition;
             if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.UpArrow))
             {
