@@ -9,7 +9,8 @@ public class Dig_Manager : MonoBehaviour {
 	[HideInInspector] public bool digging;
 
 	//SerializeField allows private variables to be accessed on inspector
-	[SerializeField] private LayerMask dirtLayer;
+	[SerializeField] private LayerMask dirtLayer, elevatorLayer;
+	private Elevator_Script elevatorScript;
 	private string digDirection = "Down";
 	private bool onDirt;
     
@@ -21,8 +22,10 @@ public class Dig_Manager : MonoBehaviour {
 	void Start() {
 		rb2d = GetComponent<Rigidbody2D> ();
 
-		//Allows script to communicate with Player_Controller.cs
+		//Allow script to communicate with the PlayerController script
 		playerController = gameObject.GetComponent<Player_Controller> ();
+		//Allow script to communicate with the Elevator Script
+		elevatorScript = gameObject.GetComponent<Elevator_Script> ();
 		dirtWarning.SetActive (false);
 		onDirt = false; //checks if the player is standing on diggable dirt
 		digging = false; //checks if the player is digging
@@ -58,10 +61,11 @@ public class Dig_Manager : MonoBehaviour {
 		
 	private void DetectDirt() {
 		Vector2 position = transform.position;
-		RaycastHit2D hitUp = Physics2D.Raycast(position, Vector2.up, 1.0f, dirtLayer);
-		RaycastHit2D hitDown = Physics2D.Raycast(position, Vector2.down, 1.0f, dirtLayer);
-		RaycastHit2D hitRight = Physics2D.Raycast(position, Vector2.right, 1.0f, dirtLayer);
-		RaycastHit2D hitLeft = Physics2D.Raycast(position, Vector2.left, 1.0f, dirtLayer);
+		//sets up raycasts for finding dirt nearby
+		RaycastHit2D hitUp = Physics2D.Raycast(position, Vector2.up, 1.0f, dirtLayer),
+		 	hitDown = Physics2D.Raycast(position, Vector2.down, 1.0f, dirtLayer),
+		 	hitRight = Physics2D.Raycast(position, Vector2.right, 1.0f, dirtLayer),
+		 	hitLeft = Physics2D.Raycast(position, Vector2.left, 1.0f, dirtLayer);
 
 		//true when there is diggable dirt nearby
 		if (hitDown.collider != null || hitLeft.collider != null || hitRight.collider != null || hitUp.collider != null) {
@@ -80,7 +84,12 @@ public class Dig_Manager : MonoBehaviour {
 				digDirection = "Up";
 		} else {
 			onDirt = false;
-			dirtWarning.SetActive (false);
+			//also checks for nearby elevator to display a hint
+			RaycastHit2D onElevator = Physics2D.Raycast(position, Vector2.down, 1.0f, elevatorLayer);
+			if (onElevator.collider != null) 
+				dirtWarning.SetActive (true);
+			else
+				dirtWarning.SetActive (false);
 		}
 	}
 		
@@ -147,6 +156,10 @@ public class Dig_Manager : MonoBehaviour {
 
 	public bool IsOnDirt() {
 		return onDirt;
+	}
+
+	public void disableHint() {
+		dirtWarning.SetActive (false);
 	}
 
 

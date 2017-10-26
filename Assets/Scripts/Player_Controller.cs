@@ -180,11 +180,11 @@ public class Player_Controller : MonoBehaviour {
 							break;
 
 					case "c":
-					case "C": // Elevator Movement
-						if( onElevator.collider!=null )
+					case "C": // Start Elevator / Digging
+						if (onElevator.collider != null) 
 							foreach (GameObject go in FindObjectsOfType(typeof(GameObject)))
 								go.SendMessage ("OnElevatorMove", SendMessageOptions.DontRequireReceiver);
-						break;
+							break;
                     }
                 }
 

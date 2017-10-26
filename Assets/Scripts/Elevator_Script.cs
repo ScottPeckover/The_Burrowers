@@ -5,8 +5,8 @@ using UnityEngine;
 public class Elevator_Script : MonoBehaviour {
 
 	[SerializeField] private LayerMask groundLayer;
-	private Rigidbody2D rb2d;
 	private int direction, speed;
+	private Rigidbody2D rb2d;
 	private RaycastHit2D groundHit;
 
 	// Use this for initialization
@@ -25,12 +25,13 @@ public class Elevator_Script : MonoBehaviour {
 		if (groundHit.collider != null && speed!=0) {
 			direction = direction * -1;
 			speed = 0;
-		}
+		} 
 	}
 
 	// On Broadcast Listener
 	void OnElevatorMove() {
 		speed=2;
 	}
+
 
 }
