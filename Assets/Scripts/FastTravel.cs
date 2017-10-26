@@ -7,36 +7,30 @@ using UnityEngine.SceneManagement;
 
 public class FastTravel : MonoBehaviour {
 
-	//LevelManager gm;
-	public int levelToLoad;
+	public int levelToLoad, currentLevel;
 	public Button levelSelectBtn;
-
 	public Image black;
 	public Animator anim;
 
-
 	void Start () {
-		//gm = FindObjectOfType<LevelManager> ();
-		//Button btn = levelSelectBtn.GetComponent<Button>();
-		levelSelectBtn.onClick.AddListener(TaskOnClick);
+		//enables button script for the fast travel map
+		if (currentLevel == 1) 
+			levelSelectBtn.onClick.AddListener(TaskOnClick);
 	}
 
 	void OnTriggerEnter2D(Collider2D col) {
-		StartCoroutine(Fading());
-		//or
-		//StartCoroutine("Fading");
+		StartCoroutine(Fading()); //correct way
+		//OR - StartCoroutine("Fading");
+		//Fading(); - won't work
+	}
 
-		//wont work
-		//Fading();
+	void TaskOnClick() {
+		StartCoroutine (Fading ());
 	}
 
 	IEnumerator Fading() {
 		anim.SetBool ("Fade", true);
 		yield return new WaitUntil (() => black.color.a == 1);
 		SceneManager.LoadScene (levelToLoad);
-	}
-
-	void TaskOnClick() {
-		StartCoroutine (Fading ());
 	}
 }
