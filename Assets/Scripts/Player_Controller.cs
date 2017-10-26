@@ -261,13 +261,13 @@ public class Player_Controller : MonoBehaviour {
             onMovingPlatform = false;
     }
 
-    void OnGUI()
-    {
-        GUI.Label(new Rect(10, 10, 200, 20), "Player x_velocity:");
-        GUI.Label(new Rect(10, 30, 100, 20), rb2d.velocity.x + "");
-        GUI.Label(new Rect(10, 50, 200, 20), "Player y_velocity:");
-        GUI.Label(new Rect(10, 70, 100, 20), rb2d.velocity.y + "");
-        GUI.Label(new Rect(10, 90, 200, 20), "OnGround: ");
-        GUI.Label(new Rect(10, 110, 100, 20), onGround + "");
-    }
+    //void OnGUI()
+    //{
+    //    GUI.Label(new Rect(10, 10, 200, 20), "Player x_velocity:");
+    //    GUI.Label(new Rect(10, 30, 100, 20), rb2d.velocity.x + "");
+    //    GUI.Label(new Rect(10, 50, 200, 20), "Player y_velocity:");
+    //    GUI.Label(new Rect(10, 70, 100, 20), rb2d.velocity.y + "");
+    //    GUI.Label(new Rect(10, 90, 200, 20), "OnGround: ");
+    //    GUI.Label(new Rect(10, 110, 100, 20), onGround + "");
+    //}
 }

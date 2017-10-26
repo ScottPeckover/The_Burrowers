@@ -19,7 +19,13 @@ public class FastTravel : MonoBehaviour {
 	}
 
 	void OnTriggerEnter2D(Collider2D col) {
-		StartCoroutine(Fading()); //correct way
+		
+        if (col.gameObject.layer == LayerMask.NameToLayer("Player"))
+        {
+            StartCoroutine(Fading());
+            col.gameObject.SetActive(false);
+        }
+        //correct way
 		//OR - StartCoroutine("Fading");
 		//Fading(); - won't work
 	}
