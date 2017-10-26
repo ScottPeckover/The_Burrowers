@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 
 public class FastTravel : MonoBehaviour {
 
-	LevelManager gm;
+	//LevelManager gm;
 	public int levelToLoad;
 	public Button levelSelectBtn;
 
@@ -16,18 +16,17 @@ public class FastTravel : MonoBehaviour {
 
 
 	void Start () {
-		gm = FindObjectOfType<LevelManager> ();
-		Button btn = levelSelectBtn.GetComponent<Button>();
-		btn.onClick.AddListener(TaskOnClick);
+		//gm = FindObjectOfType<LevelManager> ();
+		//Button btn = levelSelectBtn.GetComponent<Button>();
+		levelSelectBtn.onClick.AddListener(TaskOnClick);
 	}
 
 	void OnTriggerEnter2D(Collider2D col) {
-		//Right Way
 		StartCoroutine(Fading());
 		//or
 		//StartCoroutine("Fading");
 
-		//Wont work
+		//wont work
 		//Fading();
 	}
 
