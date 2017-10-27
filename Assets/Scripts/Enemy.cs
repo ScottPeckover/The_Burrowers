@@ -26,7 +26,7 @@ public class Enemy : MonoBehaviour {
 
 	public Enemy() {
 		health = 10.0f;
-		damage = 1.0f;
+		damage = 15.0f;
 
 		name = "Enemy";
 
