@@ -5,8 +5,8 @@ using UnityEngine;
 public class Hanging_Spider : Enemy {
 
 	public Hanging_Spider() {
-		health = 5.0f;
-		damage = 0.8f;
+		health = 1.0f;
+		damage = 5f;
 
 		name = "Spiderling";
 	}

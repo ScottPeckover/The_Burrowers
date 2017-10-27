@@ -4,12 +4,13 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Globalization;
+using System;
 
 public class Player_Controller : MonoBehaviour {
 	
 	[HideInInspector] public float gravity;
 	[HideInInspector] public bool allPaused, onGround;
-    public float acceleration, maxSpeed;
+    public float acceleration, maxSpeed, friction;
     
 	//SerializeField allows private variables to be accessed on inspector
 	[SerializeField] private LayerMask 
@@ -61,6 +62,7 @@ public class Player_Controller : MonoBehaviour {
         spriteRenderer = GetComponent<SpriteRenderer>();
         boxCollider = GetComponent<BoxCollider2D>();
 
+        boxCollider.sharedMaterial.friction = friction;
 		onGround = true;
 		isAttacking = false;
 		allPaused = false;
@@ -68,7 +70,8 @@ public class Player_Controller : MonoBehaviour {
         lastPosition = transform.position;
         originalRotation = transform.rotation;
         digManager = gameObject.GetComponent<Dig_Manager> ();
-        healthSlider.value = health;
+        if (healthSlider != null)
+            healthSlider.value = health;
     }
 
     private void Update()
@@ -87,19 +90,24 @@ public class Player_Controller : MonoBehaviour {
 				onElevator = Physics2D.Raycast(position, direction, distance, elevatorLayer);
             
 			onPlatform = platformHit.collider != null;
-            if (groundHit.collider != null || (onPlatform & rb2d.velocity.y <= 0.05f & !platformDrop) || digManager.IsOnDirt())
+            if (groundHit.collider != null || (onPlatform & rb2d.velocity.y <= 0.05f & !platformDrop) || digManager.IsOnDirt() || onElevator.collider != null)
             {
                 onGround = true;
+                boxCollider.sharedMaterial.friction = friction;
             }
             else
+            {
                 onGround = false;
+                boxCollider.sharedMaterial.friction = 0;
+            }
+                
 
             //Quitting the Game
             if (Input.GetKeyDown(KeyCode.Escape))
                 Application.Quit();
 
             //Sets sprite animations
-			if (onGround || onElevator.collider!=null)
+			if (onGround)
             {
                 if (Mathf.Abs(rb2d.velocity.x) > 0.1)
                 {
@@ -222,7 +230,7 @@ public class Player_Controller : MonoBehaviour {
         }
     }
 
-	private void stopAttack () {
+    private void stopAttack () {
 		attackTimer += Time.deltaTime;
 		if (attackTimer >= ATTACK_TIME_MAX) {
 			attackTimer = 0.0f;
