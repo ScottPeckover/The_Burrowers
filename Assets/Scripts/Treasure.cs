@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Treasure : MonoBehaviour {
 
-    public int value;
+    public float value;
 
 	// Use this for initialization
 	void Start () {

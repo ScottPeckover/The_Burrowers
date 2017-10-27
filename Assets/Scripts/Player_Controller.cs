@@ -1,6 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+using System.Globalization;
 
 public class Player_Controller : MonoBehaviour {
 	
@@ -15,22 +18,28 @@ public class Player_Controller : MonoBehaviour {
 										dirtLayer,
 										elevatorLayer;
     private Animator animator;
+    public Animator blackOutAnim;
+    public Image black;
     private SpriteRenderer spriteRenderer;
     private BoxCollider2D boxCollider;
     private Collider2D platformCollider;
     private Dig_Manager digManager;
     private Rigidbody2D movingPlatformRB;
 
+    public Slider healthSlider;
+    public Text moneyDisplay;
+
     private Vector3 lastPosition;
     private Quaternion originalRotation;
 
-    private bool onPlatform, platformDrop, isAttacking, onMovingPlatform;
+    private bool onPlatform, platformDrop, isAttacking, isFlashing, onMovingPlatform;
 	private float attackTimer = 0.0f,
 			ATTACK_TIME_MAX = 0.5f,
-			health = 10.0f,
-			attackHit = 1.0f;
-
-    private float moveX = 0f, moveY = 0f;
+			health = 100.0f,
+			attackHit = 1.0f,
+            money = 0.0f;
+    
+    private float flashTimer = 0f, FLASH_TIME_MAX = 1.0f, moveX = 0f, moveY = 0f;
     Rigidbody2D rb2d;
 
     private const int
@@ -59,10 +68,12 @@ public class Player_Controller : MonoBehaviour {
         lastPosition = transform.position;
         originalRotation = transform.rotation;
         digManager = gameObject.GetComponent<Dig_Manager> ();
+        healthSlider.value = health;
     }
 
     private void Update()
     {
+        flash();
         if (!digManager.digging)
         {
             transform.rotation = originalRotation;
@@ -247,8 +258,23 @@ public class Player_Controller : MonoBehaviour {
                             .GetComponent<Enemy>()
                             .reduceHealth(attackHit);
                     else
-                        health -= col.gameObject.GetComponent<Enemy>().getDamage();
+                    {
+                        if(!isFlashing)
+                        {
+                            isFlashing = true;
+                            UpdateHealth(-col.gameObject.GetComponent<Enemy>().getDamage());
+                        }
+                    }
                     //Debug.Log(((isAttacking)?"Attacked: ":"Collision: ")+col.gameObject.GetComponent<Enemy>().getName()+"("+col.gameObject.GetComponent<Enemy>().getHealth()+")");
+                    break;
+                case "Spikes":
+                    if (!isFlashing)
+                    {
+                        isFlashing = true;
+                        UpdateHealth(-col.gameObject.GetComponent<Spikes>().damage);
+                    }
+                    
+                    rb2d.velocity = new Vector2(0, 15);
                     break;
             }
         }
@@ -259,6 +285,47 @@ public class Player_Controller : MonoBehaviour {
     {
         if (col.gameObject.tag == "MovingPlatform")
             onMovingPlatform = false;
+    }
+
+    void UpdateHealth(float value)
+    {
+        health += value;
+        healthSlider.value = health;
+        if (health <= 0)
+        {
+            rb2d.constraints = RigidbodyConstraints2D.FreezeAll;
+            StartCoroutine(Fading());
+        }
+            
+    }
+
+    void UpdateMoney(float value)
+    {
+        money += value;
+        moneyDisplay.text = money.ToString("C", CultureInfo.CurrentCulture);
+    }
+
+    public void flash()
+    {
+        if (!isFlashing)
+            return;
+
+        flashTimer += Time.deltaTime;
+        if (flashTimer >= FLASH_TIME_MAX)
+        {
+            isFlashing = false;
+            flashTimer = 0f;
+            spriteRenderer.enabled = false;
+        }
+        spriteRenderer.enabled = !spriteRenderer.enabled;
+    }
+
+    IEnumerator Fading()
+    {
+        Debug.Log("started");
+        blackOutAnim.SetBool("Fade", true);
+        yield return new WaitUntil(() => black.color.a == 1);
+        LevelManager.ReloadLevel();
     }
 
     //void OnGUI()
