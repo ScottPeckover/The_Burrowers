@@ -335,7 +335,7 @@ public class Player_Controller : MonoBehaviour {
             
     }
 
-    void UpdateMoney(float value)
+    public void UpdateMoney(float value)
     {
         money += value;
         moneyDisplay.text = money.ToString("C", CultureInfo.CurrentCulture);

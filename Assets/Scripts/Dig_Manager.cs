@@ -5,35 +5,50 @@ using UnityEngine;
 public class Dig_Manager : MonoBehaviour {
 
 
-	public GameObject dirtWarning;
+	public GameObject dirtWarning, treasureWarning;
 	[HideInInspector] public bool digging;
 
 	//SerializeField allows private variables to be accessed on inspector
-	[SerializeField] private LayerMask dirtLayer, elevatorLayer;
-	private Elevator_Script elevatorScript;
+	[SerializeField] private LayerMask dirtLayer, elevatorLayer, treasureLayer;
 	private string digDirection = "Down";
-	private bool onDirt;
+	private bool onDirt, onTreasure;
+	private float chestValue;
     
 	Player_Controller playerController;
+	private Elevator_Script elevatorScript;
+	private Treasure treasureScript;
 
+	private GameObject chestToOpen;
 	Rigidbody2D rb2d;
 
 
 	void Start() {
+		//Allow this script to communicate with the PlayerController script
+		playerController = gameObject.GetComponent<Player_Controller> ();
+
+		//Allow this script to communicate with the Elevator script
+		elevatorScript = gameObject.GetComponent<Elevator_Script> ();
+
+		//Allow this script to communicate with the Treasure script
+		treasureScript = gameObject.GetComponent<Treasure> ();
+
 		rb2d = GetComponent<Rigidbody2D> ();
 
-		//Allow script to communicate with the PlayerController script
-		playerController = gameObject.GetComponent<Player_Controller> ();
-		//Allow script to communicate with the Elevator Script
-		elevatorScript = gameObject.GetComponent<Elevator_Script> ();
 		dirtWarning.SetActive (false);
 		onDirt = false; //checks if the player is standing on diggable dirt
 		digging = false; //checks if the player is digging
+		onTreasure = false; //checks if the player has found treasure
 	}
 
 	private void FixedUpdate() {
+		//Finds the position of the player
+		Vector2 position = transform.position;
+
 		//Detect if Player is on diggable dirt
-		DetectDirt ();
+		DetectDirt (position);
+
+		//Detect if Player has found treasure
+		DetectTreasure (position);
 	}
 
 	private void Update() {
@@ -42,13 +57,30 @@ public class Dig_Manager : MonoBehaviour {
 			switch (Input.inputString) {
 			case "c":
 			case "C":
-				if (!digging) 
+				if (!digging)
 					StartDigging ();
 				else
 					StopDigging ();
 				break;
 			}
 		}
+		if (onTreasure) {
+			switch (Input.inputString) {
+			case "c":
+			case "C":
+				OpenTreasure ();
+				break;
+			}
+		}
+		//Input for opening treasure//////////////
+//		switch(Input.inputString) {
+//		case "v":
+//		case "V":
+//			if (onTreasure)
+//				OpenTreasure ();
+//			break;
+//		}
+		//////////////////////////////////////////////
 			
 		//Set up digging movement
 		if (digging) {
@@ -59,8 +91,7 @@ public class Dig_Manager : MonoBehaviour {
 		}
 	}
 		
-	private void DetectDirt() {
-		Vector2 position = transform.position;
+	private void DetectDirt(Vector2 position) {
 		//sets up raycasts for finding dirt nearby
 		RaycastHit2D hitUp = Physics2D.Raycast(position, Vector2.up, 1.0f, dirtLayer),
 		 	hitDown = Physics2D.Raycast(position, Vector2.down, 1.0f, dirtLayer),
@@ -149,6 +180,40 @@ public class Dig_Manager : MonoBehaviour {
 		dirtWarning.SetActive (false);
 	}
 		
+	private void DetectTreasure(Vector2 position) {
+		//sets up raycasts for finding nearby treasure
+		RaycastHit2D hitLeft = Physics2D.Raycast(position, Vector2.left, 1.0f, treasureLayer);
+		RaycastHit2D hitRight = Physics2D.Raycast(position, Vector2.right, 1.0f, treasureLayer);
+		RaycastHit2D hitUp = Physics2D.Raycast(position, Vector2.up, 1.0f, treasureLayer);
+		RaycastHit2D hitDown = Physics2D.Raycast(position, Vector2.down, 1.0f, treasureLayer);
+
+		if (hitDown.collider != null || hitLeft.collider != null || hitRight.collider != null || hitUp.collider != null) {
+			onTreasure = true;
+			treasureWarning.SetActive (true);
+			if (hitRight.collider != null) {
+				chestToOpen = hitRight.collider.gameObject;
+			} else if (hitLeft.collider != null) {
+				chestToOpen = hitLeft.collider.gameObject;
+			} else if (hitUp.collider != null) {
+				chestToOpen = hitUp.collider.gameObject;
+			} else if (hitDown.collider != null) {
+				chestToOpen = hitDown.collider.gameObject;
+			}
+		} else {
+			onTreasure = false;
+			treasureWarning.SetActive (false);
+		}
+	}
+
+	private void OpenTreasure() {
+		if (chestToOpen.tag == "ChestSmall")
+			chestValue = 23.0f;
+		 else if (chestToOpen.tag == "ChestBig") 
+			chestValue = 48.0f;
+		
+		playerController.UpdateMoney (chestValue);
+		chestToOpen.SetActive (false);
+	}
 
 	public bool IsDigging() {
 		return digging;	

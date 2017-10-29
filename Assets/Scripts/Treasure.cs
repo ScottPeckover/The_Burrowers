@@ -4,15 +4,19 @@ using UnityEngine;
 
 public class Treasure : MonoBehaviour {
 
-    public float value;
+	[SerializeField] private float value;
 
-	// Use this for initialization
-	void Start () {
-		
+	public float getValue() {
+		return value;
 	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+
+//	// Use this for initialization
+//	void Start () {
+//		
+//	}
+//	
+//	// Update is called once per frame
+//	void Update () {
+//		
+//	}
 }
