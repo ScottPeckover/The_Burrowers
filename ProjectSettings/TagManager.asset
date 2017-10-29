@@ -9,6 +9,7 @@ TagManager:
   - Spikes
   - Lava
   - Poison
+  - NPC
   layers:
   - Default
   - TransparentFX

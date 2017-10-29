@@ -5,7 +5,7 @@ using UnityEngine;
 public class Dig_Manager : MonoBehaviour {
 
 
-	[HideInInspector] public GameObject dirtWarning;
+	public GameObject dirtWarning;
 	[HideInInspector] public bool digging;
 
 	//SerializeField allows private variables to be accessed on inspector
@@ -84,9 +84,9 @@ public class Dig_Manager : MonoBehaviour {
 				digDirection = "Up";
 		} else {
 			onDirt = false;
-			//also checks for nearby elevator to display a hint
+			//also checks for nearby elevator or NPC to display a hint
 			RaycastHit2D onElevator = Physics2D.Raycast(position, Vector2.down, 1.0f, elevatorLayer);
-			if (onElevator.collider != null) 
+			if (onElevator.collider != null || playerController.npcWarning) 
 				dirtWarning.SetActive (true);
 			else
 				dirtWarning.SetActive (false);

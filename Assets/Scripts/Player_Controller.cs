@@ -9,7 +9,7 @@ using System;
 public class Player_Controller : MonoBehaviour {
 	
 	[HideInInspector] public float gravity;
-	[HideInInspector] public bool allPaused, onGround;
+	[HideInInspector] public bool allPaused, onGround, npcWarning;
     public float acceleration, maxSpeed, friction;
     
 	//SerializeField allows private variables to be accessed on inspector
@@ -26,6 +26,7 @@ public class Player_Controller : MonoBehaviour {
     private Collider2D platformCollider;
     private Dig_Manager digManager;
     private Rigidbody2D movingPlatformRB;
+    private Talking npc;
 
     public Slider healthSlider;
     public Text moneyDisplay;
@@ -90,10 +91,11 @@ public class Player_Controller : MonoBehaviour {
 				groundHitLeft = Physics2D.Raycast(positionLeft, direction, distance, groundLayer),
                 groundHitRight = Physics2D.Raycast(positionRight, direction, distance, groundLayer),
                 platformHit = Physics2D.Raycast(position, direction, distance, platformLayer),
-				onElevator = Physics2D.Raycast(position, direction, distance, elevatorLayer);
+                dirtHit = Physics2D.Raycast(position, direction, distance, dirtLayer),
+                onElevator = Physics2D.Raycast(position, direction, distance, elevatorLayer);
             
 			onPlatform = platformHit.collider != null;
-            if (groundHitLeft.collider != null || groundHitRight.collider != null || (onPlatform & rb2d.velocity.y <= 0.05f & !platformDrop) || digManager.IsOnDirt() || onElevator.collider != null)
+            if (groundHitLeft.collider != null || groundHitRight.collider != null || (onPlatform & rb2d.velocity.y <= 0.05f & !platformDrop) || dirtHit.collider != null || onElevator.collider != null)
             {
                 onGround = true;
                 boxCollider.sharedMaterial.friction = friction;
@@ -200,11 +202,15 @@ public class Player_Controller : MonoBehaviour {
 								go.SendMessage("OnPausedGame", SendMessageOptions.DontRequireReceiver);
 							break;
 
-					case "c":
-					case "C": // Start Elevator / Digging
-						if (onElevator.collider != null) 
-							foreach (GameObject go in FindObjectsOfType(typeof(GameObject)))
-								go.SendMessage ("OnElevatorMove", SendMessageOptions.DontRequireReceiver);
+					    case "c":
+					    case "C": // Start Elevator / talking
+                            if (npcWarning)
+                            {
+                                npc.toggleTalk();
+                            }
+						    if (onElevator.collider != null) 
+							    foreach (GameObject go in FindObjectsOfType(typeof(GameObject)))
+								    go.SendMessage ("OnElevatorMove", SendMessageOptions.DontRequireReceiver);
 							break;
                     }
                 }
@@ -241,12 +247,27 @@ public class Player_Controller : MonoBehaviour {
 		}
 	}
 
+    private void OnTriggerEnter2D(Collider2D collider)
+    {
+        if(collider.gameObject.tag == "NPC")
+        {
+            npcWarning = true;
+            npc = collider.gameObject.GetComponent<Talking>();
+            Debug.Log("Wombo!");
+        }
+    }
+
     private void OnTriggerExit2D(Collider2D collider)
     {
 		if (collider.gameObject.layer == LayerMask.NameToLayer("Platform"))
         {
             platformDrop = false;
             collider.isTrigger = false;
+        }
+        else if (collider.gameObject.tag == "NPC")
+        {
+            npcWarning = false;
+            npc.talk(false);
         }
     }
 
