@@ -3,7 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Dig_Manager : MonoBehaviour {
-
+	/// <summary>
+	/// 
+	/// Dig Manager handles all digging mechanics.
+	/// Currently it also handles script to open Treasure Chests also, to avoid bugs.
+	/// 
+	/// </summary>
 
 	public GameObject dirtWarning, treasureWarning;
 	[HideInInspector] public bool digging;
@@ -52,7 +57,7 @@ public class Dig_Manager : MonoBehaviour {
 	}
 
 	private void Update() {
-		//Input for digging
+		//Inputs for digging 
 		if (onDirt && playerController.onGround) {
 			switch (Input.inputString) {
 			case "c":
@@ -64,6 +69,8 @@ public class Dig_Manager : MonoBehaviour {
 				break;
 			}
 		}
+
+		//Inputs for opening treasure
 		if (onTreasure) {
 			switch (Input.inputString) {
 			case "c":
@@ -72,16 +79,7 @@ public class Dig_Manager : MonoBehaviour {
 				break;
 			}
 		}
-		//Input for opening treasure//////////////
-//		switch(Input.inputString) {
-//		case "v":
-//		case "V":
-//			if (onTreasure)
-//				OpenTreasure ();
-//			break;
-//		}
-		//////////////////////////////////////////////
-			
+
 		//Set up digging movement
 		if (digging) {
 			float moveHorizontal = Input.GetAxis("Horizontal");
@@ -91,6 +89,7 @@ public class Dig_Manager : MonoBehaviour {
 		}
 	}
 		
+	//Detects whether player is able to dig
 	private void DetectDirt(Vector2 position) {
 		//sets up raycasts for finding dirt nearby
 		RaycastHit2D hitUp = Physics2D.Raycast(position, Vector2.up, 1.0f, dirtLayer),
@@ -124,10 +123,9 @@ public class Dig_Manager : MonoBehaviour {
 		}
 	}
 		
+	//Moves player into the dirt and starts digging
 	private void StartDigging() {
 		Vector2 pos = transform.position; 
-
-		//moves player into the dirt
 		switch(digDirection) {
 		case "Up":
 			pos.y += 1f;
@@ -137,7 +135,6 @@ public class Dig_Manager : MonoBehaviour {
 			break;
 		case "Down":
 			pos.y -= 1f;
-			//rb2d.velocity = new Vector2(rb2d.velocity.x, 5);
 			break;
 		case "Left":
 			pos.x -= 1f;
@@ -147,16 +144,15 @@ public class Dig_Manager : MonoBehaviour {
 		digging = true;
 		onDirt = false;
 		playerController.onGround = false;
-		//turns off gravity for monty
+		//turns off gravity for monty for dig movement
 		rb2d.gravityScale = 0;
-		//makes sure the '!' above monty is disabled
+		//makes sure the dig hint is disabled
 		dirtWarning.SetActive (false);
 	}
 		
+	//Stops digging and emerges from the dirt
 	private void StopDigging() {
 		Vector2 pos = transform.position;
-
-		//moves player out of the dirt
 		switch(digDirection) {
 		case "Up":
 			pos.y += 1f;
@@ -166,7 +162,6 @@ public class Dig_Manager : MonoBehaviour {
 			break;
 		case "Down":
 			pos.y -= 1f;
-			//rb2d.velocity = new Vector2(rb2d.velocity.x, 5);
 			break;
 		case "Left":
 			pos.x -= 1.2f;
@@ -176,12 +171,12 @@ public class Dig_Manager : MonoBehaviour {
 		digging = false;
 		//turns gravity back on
 		rb2d.gravityScale = playerController.gravity;
-		//makes sure the '!' above monty is disabled
+		//makes sure the dig hint is disabled
 		dirtWarning.SetActive (false);
 	}
 		
+	//Detects whether the player is near treasure
 	private void DetectTreasure(Vector2 position) {
-		//sets up raycasts for finding nearby treasure
 		RaycastHit2D hitLeft = Physics2D.Raycast(position, Vector2.left, 1.0f, treasureLayer);
 		RaycastHit2D hitRight = Physics2D.Raycast(position, Vector2.right, 1.0f, treasureLayer);
 		RaycastHit2D hitUp = Physics2D.Raycast(position, Vector2.up, 1.0f, treasureLayer);
@@ -205,6 +200,7 @@ public class Dig_Manager : MonoBehaviour {
 		}
 	}
 
+	//Opens treasure chest and awards money
 	private void OpenTreasure() {
 		if (chestToOpen.tag == "ChestSmall")
 			chestValue = 23.0f;
@@ -214,6 +210,7 @@ public class Dig_Manager : MonoBehaviour {
 		playerController.UpdateMoney (chestValue);
 		chestToOpen.SetActive (false);
 	}
+
 
 	public bool IsDigging() {
 		return digging;	
@@ -226,6 +223,4 @@ public class Dig_Manager : MonoBehaviour {
 	public void disableHint() {
 		dirtWarning.SetActive (false);
 	}
-
-
 }

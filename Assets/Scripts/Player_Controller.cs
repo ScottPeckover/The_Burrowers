@@ -7,9 +7,18 @@ using System.Globalization;
 using System;
 
 public class Player_Controller : MonoBehaviour {
-	
+	/// <summary>
+	/// 
+	/// Main script for handling Player events
+	/// 
+	/// </summary>
+
+	//HideInInspector allows public variables to be hidden from inspector
 	[HideInInspector] public float gravity;
-	[HideInInspector] public bool allPaused, onGround, npcWarning;
+	[HideInInspector] public bool allPaused, 
+										onGround, 
+										npcWarning;
+
     public float acceleration, maxSpeed, friction;
     
 	//SerializeField allows private variables to be accessed on inspector
@@ -44,6 +53,7 @@ public class Player_Controller : MonoBehaviour {
     private float flashTimer = 0f, FLASH_TIME_MAX = 1.0f, moveX = 0f, moveY = 0f;
     Rigidbody2D rb2d;
 
+	//Variables for animation states
     private const int
     STANDING = 0,
     WALKING = 1,
@@ -323,6 +333,7 @@ public class Player_Controller : MonoBehaviour {
             onMovingPlatform = false;
     }
 
+	//Updates health on UI
     void UpdateHealth(float value)
     {
         health += value;
@@ -335,12 +346,14 @@ public class Player_Controller : MonoBehaviour {
             
     }
 
+	//Updates money on UI
     public void UpdateMoney(float value)
     {
         money += value;
         moneyDisplay.text = money.ToString("C", CultureInfo.CurrentCulture);
     }
 
+	//Flashing effect when player is hurt
     public void flash()
     {
         if (!isFlashing)
@@ -367,13 +380,13 @@ public class Player_Controller : MonoBehaviour {
         LevelManager.ReloadLevel();
     }
 
-    void OnGUI()
-    {
-    //    GUI.Label(new Rect(10, 10, 200, 20), "Player x_velocity:");
-    //    GUI.Label(new Rect(10, 30, 100, 20), rb2d.velocity.x + "");
-    //    GUI.Label(new Rect(10, 50, 200, 20), "Player y_velocity:");
-    //    GUI.Label(new Rect(10, 70, 100, 20), rb2d.velocity.y + "");
-    //    GUI.Label(new Rect(10, 90, 200, 20), "OnGround: ");
-    //    GUI.Label(new Rect(10, 110, 100, 20), onGround + "");
-    }
+//    void OnGUI()
+//    {
+//    //    GUI.Label(new Rect(10, 10, 200, 20), "Player x_velocity:");
+//    //    GUI.Label(new Rect(10, 30, 100, 20), rb2d.velocity.x + "");
+//    //    GUI.Label(new Rect(10, 50, 200, 20), "Player y_velocity:");
+//    //    GUI.Label(new Rect(10, 70, 100, 20), rb2d.velocity.y + "");
+//    //    GUI.Label(new Rect(10, 90, 200, 20), "OnGround: ");
+//    //    GUI.Label(new Rect(10, 110, 100, 20), onGround + "");
+//    }
 }
