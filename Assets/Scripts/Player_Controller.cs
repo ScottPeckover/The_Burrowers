@@ -86,8 +86,6 @@ public class Player_Controller : MonoBehaviour {
             Vector2 positionRight = new Vector2(position.x + 0.5f, position.y);
             Vector2 direction = Vector2.down;
             float distance = 0.8f;
-            Debug.DrawLine(positionLeft, new Vector2(positionLeft.x, positionLeft.y - distance), Color.red);
-            Debug.DrawLine(positionRight, new Vector2(positionRight.x, positionRight.y - distance), Color.red);
             RaycastHit2D 
 				groundHitLeft = Physics2D.Raycast(positionLeft, direction, distance, groundLayer),
                 groundHitRight = Physics2D.Raycast(positionRight, direction, distance, groundLayer),
@@ -186,7 +184,7 @@ public class Player_Controller : MonoBehaviour {
                             if (	onGround && !platformDrop || // onGround
 									digManager.IsOnDirt() && !platformDrop || // onDirt
 									onElevator.collider!=null && !platformDrop	) { // onElevator
-                                rb2d.velocity = new Vector2(rb2d.velocity.x, 15);
+                                rb2d.velocity = new Vector2(rb2d.velocity.x, 12);
 								animator.SetInteger(MOVEMENT_STATE, JUMPING);
                             }
                             break;
@@ -253,7 +251,41 @@ public class Player_Controller : MonoBehaviour {
         }
     }
 
-    void OnCollisionEnter2D (Collision2D col) {
+    void OnCollisionStay2D(Collision2D col)
+    {
+        if (!isFlashing)
+        {
+            switch (col.gameObject.tag)
+            {
+                case "Enemy":
+                    if (isAttacking)
+                        col.gameObject
+                            .GetComponent<Enemy>()
+                            .reduceHealth(attackHit);
+                    else
+                    {
+                        isFlashing = true;
+                        UpdateHealth(-col.gameObject.GetComponent<Enemy>().getDamage());
+                    }
+                    //Debug.Log(((isAttacking)?"Attacked: ":"Collision: ")+col.gameObject.GetComponent<Enemy>().getName()+"("+col.gameObject.GetComponent<Enemy>().getHealth()+")");
+                    break;
+                case "Spikes":
+                    isFlashing = true;
+                    UpdateHealth(-col.gameObject.GetComponent<Spikes>().damage);
+                    rb2d.velocity = new Vector2(0, 15);
+                    break;
+                case "Lava":
+                    isFlashing = true;
+                    UpdateHealth(-20);
+                    break;
+                case "Poison":
+                    isFlashing = true;
+                    UpdateHealth(-15);
+                    break;
+            }
+        }
+    }
+        void OnCollisionEnter2D (Collision2D col) {
         if (col.gameObject.layer == LayerMask.NameToLayer("Platform"))
             platformCollider = col.collider;
         else if (col.gameObject.tag == "MovingPlatform")
@@ -263,50 +295,7 @@ public class Player_Controller : MonoBehaviour {
         }
         else
         {
-            switch (col.gameObject.tag)
-            {
-                case "Enemy":
-                    if (isAttacking)
-                        col
-                                .gameObject
-                            .GetComponent<Enemy>()
-                            .reduceHealth(attackHit);
-                    else
-                    {
-                        if(!isFlashing)
-                        {
-                            isFlashing = true;
-                            UpdateHealth(-col.gameObject.GetComponent<Enemy>().getDamage());
-                        }
-                    }
-                    //Debug.Log(((isAttacking)?"Attacked: ":"Collision: ")+col.gameObject.GetComponent<Enemy>().getName()+"("+col.gameObject.GetComponent<Enemy>().getHealth()+")");
-                    break;
-                case "Spikes":
-                    if (!isFlashing)
-                    {
-                        isFlashing = true;
-                        UpdateHealth(-col.gameObject.GetComponent<Spikes>().damage);
-                    }
-                    
-                    rb2d.velocity = new Vector2(0, 15);
-                    break;
-                case "Lava":
-                    if (!isFlashing)
-                    {
-                        isFlashing = true;
-                        UpdateHealth(-20);
-                    }
-                    
-                    break;
-                case "Poison":
-                    if (!isFlashing)
-                    {
-                        isFlashing = true;
-                        UpdateHealth(-15);
-                    }
-
-                    break;
-            }
+            
         }
         
     }
@@ -352,7 +341,6 @@ public class Player_Controller : MonoBehaviour {
 
     IEnumerator Fading()
     {
-        Debug.Log("started");
         blackOutAnim.SetBool("Fade", true);
         yield return new WaitUntil(() => black.color.a == 1);
         LevelManager.ReloadLevel();
@@ -364,7 +352,7 @@ public class Player_Controller : MonoBehaviour {
     //    GUI.Label(new Rect(10, 30, 100, 20), rb2d.velocity.x + "");
     //    GUI.Label(new Rect(10, 50, 200, 20), "Player y_velocity:");
     //    GUI.Label(new Rect(10, 70, 100, 20), rb2d.velocity.y + "");
-        GUI.Label(new Rect(10, 90, 200, 20), "OnGround: ");
-        GUI.Label(new Rect(10, 110, 100, 20), onGround + "");
+    //    GUI.Label(new Rect(10, 90, 200, 20), "OnGround: ");
+    //    GUI.Label(new Rect(10, 110, 100, 20), onGround + "");
     }
 }

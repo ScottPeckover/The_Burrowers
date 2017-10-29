@@ -31,7 +31,6 @@ public class Spitting_Spider_Script : Enemy {
 	// Update is called once per frame
 	void Update () {
 		if (!isPaused()) {
-            Debug.DrawRay(transform.position, target.transform.position - transform.position, Color.red);
 			vectorToTarget = target.transform.position - transform.position;
 			angle = (Mathf.Atan2(vectorToTarget.y, vectorToTarget.x) * Mathf.Rad2Deg) - 90;
 			qt = Quaternion.AngleAxis(angle, Vector3.forward);

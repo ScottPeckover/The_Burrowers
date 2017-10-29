@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour {
 
-	private SpriteRenderer spriteRenderer;
+    [HideInInspector]
+	public SpriteRenderer spriteRenderer;
 	private bool 
 				isFlashing, 
 				paused;
@@ -50,7 +51,9 @@ public class Enemy : MonoBehaviour {
 			return;
 		health -= hit;
 		isFlashing = true;
-	}
+        if (health <= 0)
+            Destroy(gameObject);
+    }
 
 	public int getDirection() {
 		return direction;
@@ -89,27 +92,15 @@ public class Enemy : MonoBehaviour {
 		return paused;
 	}
 
-	void OnCollisionEnter2D(Collision2D coll) {
-		//Debug.Log (name + " Collided");
-		direction = direction*-1;
-
-		if( coll.gameObject.tag == "Player" ){
-//			Physics2D.IgnoreCollision(coll.collider, coll.otherCollider);
-		}
-
-		if (health <= 0)
-			Destroy (coll.otherCollider.gameObject);
-	}
-
 	void OnPausedGame () {
 		paused = !paused;
 	}
 
-	void OnGUI () {
-		Vector2 targetPosition;
-		targetPosition = Camera.main.WorldToScreenPoint (transform.position);
+	//void OnGUI () {
+	//	Vector2 targetPosition;
+	//	targetPosition = Camera.main.WorldToScreenPoint (transform.position);
 
-		GUI.Box (new Rect(targetPosition.x - (health*5), Screen.height - targetPosition.y - height, health*10, 20), ""+health);
-	}
+//		GUI.Box (new Rect(targetPosition.x - (health*5), Screen.height - targetPosition.y - height, health*10, 20), ""+health);
+	//}
 
 }

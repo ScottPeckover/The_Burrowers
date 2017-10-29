@@ -24,7 +24,11 @@ public class Hanging_Spider : Enemy {
 		} else {
 			rb2d.velocity = new Vector2 (0f, 0f);
 		}
-//		transform.position = Camera.main.WorldToViewportPoint (target.position);
 	}
 
+    void OnCollisionEnter2D(Collision2D coll)
+    {
+        direction = direction * -1;
+
+    }
 }
