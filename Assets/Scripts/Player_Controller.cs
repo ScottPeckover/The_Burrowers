@@ -82,15 +82,20 @@ public class Player_Controller : MonoBehaviour {
             transform.rotation = originalRotation;
             //Check if player is on ground
             Vector3 position = transform.position;
+            Vector2 positionLeft = new Vector2(position.x - 0.5f, position.y);
+            Vector2 positionRight = new Vector2(position.x + 0.5f, position.y);
             Vector2 direction = Vector2.down;
             float distance = 0.8f;
+            Debug.DrawLine(positionLeft, new Vector2(positionLeft.x, positionLeft.y - distance), Color.red);
+            Debug.DrawLine(positionRight, new Vector2(positionRight.x, positionRight.y - distance), Color.red);
             RaycastHit2D 
-				groundHit = Physics2D.Raycast(position, direction, distance, groundLayer),
-            	platformHit = Physics2D.Raycast(position, direction, distance, platformLayer),
+				groundHitLeft = Physics2D.Raycast(positionLeft, direction, distance, groundLayer),
+                groundHitRight = Physics2D.Raycast(positionRight, direction, distance, groundLayer),
+                platformHit = Physics2D.Raycast(position, direction, distance, platformLayer),
 				onElevator = Physics2D.Raycast(position, direction, distance, elevatorLayer);
             
 			onPlatform = platformHit.collider != null;
-            if (groundHit.collider != null || (onPlatform & rb2d.velocity.y <= 0.05f & !platformDrop) || digManager.IsOnDirt() || onElevator.collider != null)
+            if (groundHitLeft.collider != null || groundHitRight.collider != null || (onPlatform & rb2d.velocity.y <= 0.05f & !platformDrop) || digManager.IsOnDirt() || onElevator.collider != null)
             {
                 onGround = true;
                 boxCollider.sharedMaterial.friction = friction;
@@ -284,6 +289,14 @@ public class Player_Controller : MonoBehaviour {
                     
                     rb2d.velocity = new Vector2(0, 15);
                     break;
+                case "Lava":
+                    if (!isFlashing)
+                    {
+                        isFlashing = true;
+                        UpdateHealth(-20);
+                    }
+                    
+                    break;
             }
         }
         
@@ -336,13 +349,13 @@ public class Player_Controller : MonoBehaviour {
         LevelManager.ReloadLevel();
     }
 
-    //void OnGUI()
-    //{
+    void OnGUI()
+    {
     //    GUI.Label(new Rect(10, 10, 200, 20), "Player x_velocity:");
     //    GUI.Label(new Rect(10, 30, 100, 20), rb2d.velocity.x + "");
     //    GUI.Label(new Rect(10, 50, 200, 20), "Player y_velocity:");
     //    GUI.Label(new Rect(10, 70, 100, 20), rb2d.velocity.y + "");
-    //    GUI.Label(new Rect(10, 90, 200, 20), "OnGround: ");
-    //    GUI.Label(new Rect(10, 110, 100, 20), onGround + "");
-    //}
+        GUI.Label(new Rect(10, 90, 200, 20), "OnGround: ");
+        GUI.Label(new Rect(10, 110, 100, 20), onGround + "");
+    }
 }
