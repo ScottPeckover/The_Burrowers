@@ -11,19 +11,20 @@ public class Dig_Manager : MonoBehaviour {
 	/// </summary>
 
 	public GameObject dirtWarning, treasureWarning;
-	[HideInInspector] public bool digging;
+	[HideInInspector] public bool digging, onTreasure;
 
 	//SerializeField allows private variables to be accessed on inspector
 	[SerializeField] private LayerMask dirtLayer, elevatorLayer, treasureLayer;
 	private string digDirection = "Down";
-	private bool onDirt, onTreasure;
+	private bool onDirt;
 	private float chestValue;
     
 	Player_Controller playerController;
 	private Elevator_Script elevatorScript;
 	private Treasure treasureScript;
 
-	private GameObject chestToOpen;
+    [HideInInspector]
+	public GameObject chestToOpen;
 	Rigidbody2D rb2d;
 
 
@@ -51,9 +52,7 @@ public class Dig_Manager : MonoBehaviour {
 
 		//Detect if Player is on diggable dirt
 		DetectDirt (position);
-
-		//Detect if Player has found treasure
-		DetectTreasure (position);
+        
 	}
 
 	private void Update() {
@@ -173,31 +172,6 @@ public class Dig_Manager : MonoBehaviour {
 		rb2d.gravityScale = playerController.gravity;
 		//makes sure the dig hint is disabled
 		dirtWarning.SetActive (false);
-	}
-		
-	//Detects whether the player is near treasure
-	private void DetectTreasure(Vector2 position) {
-		RaycastHit2D hitLeft = Physics2D.Raycast(position, Vector2.left, 1.0f, treasureLayer);
-		RaycastHit2D hitRight = Physics2D.Raycast(position, Vector2.right, 1.0f, treasureLayer);
-		RaycastHit2D hitUp = Physics2D.Raycast(position, Vector2.up, 1.0f, treasureLayer);
-		RaycastHit2D hitDown = Physics2D.Raycast(position, Vector2.down, 1.0f, treasureLayer);
-
-		if (hitDown.collider != null || hitLeft.collider != null || hitRight.collider != null || hitUp.collider != null) {
-			onTreasure = true;
-			treasureWarning.SetActive (true);
-			if (hitRight.collider != null) {
-				chestToOpen = hitRight.collider.gameObject;
-			} else if (hitLeft.collider != null) {
-				chestToOpen = hitLeft.collider.gameObject;
-			} else if (hitUp.collider != null) {
-				chestToOpen = hitUp.collider.gameObject;
-			} else if (hitDown.collider != null) {
-				chestToOpen = hitDown.collider.gameObject;
-			}
-		} else {
-			onTreasure = false;
-			treasureWarning.SetActive (false);
-		}
 	}
 
 	//Opens treasure chest and awards money

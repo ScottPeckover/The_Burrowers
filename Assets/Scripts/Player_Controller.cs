@@ -265,6 +265,12 @@ public class Player_Controller : MonoBehaviour {
             npc = collider.gameObject.GetComponent<Talking>();
             Debug.Log("Wombo!");
         }
+        else if (collider.gameObject.layer == LayerMask.NameToLayer("Treasure"))
+        {
+            digManager.treasureWarning.SetActive(true);
+            digManager.onTreasure = true;
+            digManager.chestToOpen = collider.gameObject;
+        }
     }
 
     private void OnTriggerExit2D(Collider2D collider)
@@ -278,6 +284,9 @@ public class Player_Controller : MonoBehaviour {
         {
             npcWarning = false;
             npc.talk(false);
+        } else if (collider.gameObject.layer == LayerMask.NameToLayer("Treasure")){
+            digManager.treasureWarning.SetActive(false);
+            digManager.onTreasure = false;
         }
     }
 
