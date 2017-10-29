@@ -76,10 +76,14 @@ public class Enemy : MonoBehaviour {
 	}
 
 	public void flash(){
-		if (!isFlashing)
-			return;
+        if (!isFlashing)
+        {
+            spriteRenderer.color = Color.white;
+            return;
+        }
 
-		flashTimer += Time.deltaTime;
+        spriteRenderer.color = Color.red;
+        flashTimer += Time.deltaTime;
 		if (flashTimer >= FLASH_TIME_MAX) {
 			isFlashing = false;
 			flashTimer = 0f;

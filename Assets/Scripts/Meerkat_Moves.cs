@@ -5,8 +5,8 @@ public class Meerkat_Moves : Enemy {
 
 
 	public Meerkat_Moves() {
-		health = 7.0f;
-		damage = 1.5f;
+		health = 3.0f;
+		damage = 7f;
 		height = 110;
 
 		name = "Meerkat";

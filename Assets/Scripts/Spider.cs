@@ -7,7 +7,7 @@ public class Spider : Enemy {
 	void Start () {
         spriteRenderer = GetComponent<SpriteRenderer>();
         health = 2.0f;
-        damage = 10.0f;
+        damage = 5.0f;
         direction = 1;
         speed = 4;
     }

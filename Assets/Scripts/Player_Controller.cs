@@ -82,8 +82,8 @@ public class Player_Controller : MonoBehaviour {
             transform.rotation = originalRotation;
             //Check if player is on ground
             Vector3 position = transform.position;
-            Vector2 positionLeft = new Vector2(position.x - 0.5f, position.y);
-            Vector2 positionRight = new Vector2(position.x + 0.5f, position.y);
+            Vector2 positionLeft = new Vector2(position.x - 0.4f, position.y);
+            Vector2 positionRight = new Vector2(position.x + 0.4f, position.y);
             Vector2 direction = Vector2.down;
             float distance = 0.8f;
             RaycastHit2D 
@@ -161,11 +161,10 @@ public class Player_Controller : MonoBehaviour {
             
             if (!isAttacking)
             {   //Limits speed of player
-                if (!(Mathf.Abs(rb2d.velocity.x) > maxSpeed))
+                float moveHorizontal = Input.GetAxis("Horizontal");
+                if (moveHorizontal != 0)
                 {
-                    float moveHorizontal = Input.GetAxis("Horizontal");
-                    //Vector2 movement = new Vector2(moveHorizontal, 0);
-                    rb2d.velocity = new Vector2((moveHorizontal * acceleration) + rb2d.velocity.x, rb2d.velocity.y);
+                    rb2d.velocity = new Vector2(Mathf.Clamp((moveHorizontal * acceleration + rb2d.velocity.x),-maxSpeed,maxSpeed), rb2d.velocity.y);
                 }
                 //Dropping through platforms
                 if (Input.GetKeyDown(KeyCode.Z) & Input.GetKey(KeyCode.DownArrow) & onPlatform)
@@ -278,10 +277,6 @@ public class Player_Controller : MonoBehaviour {
                     isFlashing = true;
                     UpdateHealth(-20);
                     break;
-                case "Poison":
-                    isFlashing = true;
-                    UpdateHealth(-15);
-                    break;
             }
         }
     }
@@ -293,9 +288,10 @@ public class Player_Controller : MonoBehaviour {
             onMovingPlatform = true;
             movingPlatformRB = col.gameObject.GetComponent<Rigidbody2D>();
         }
-        else
+        else if(col.gameObject.tag == "Poison")
         {
-            
+            isFlashing = true;
+            UpdateHealth(-15);
         }
         
     }
@@ -327,8 +323,12 @@ public class Player_Controller : MonoBehaviour {
     public void flash()
     {
         if (!isFlashing)
+        {
+            spriteRenderer.color = Color.white;
             return;
+        }
 
+        spriteRenderer.color = Color.red;
         flashTimer += Time.deltaTime;
         if (flashTimer >= FLASH_TIME_MAX)
         {
