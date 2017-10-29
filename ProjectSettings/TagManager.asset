@@ -8,6 +8,7 @@ TagManager:
   - MovingPlatform
   - Spikes
   - Lava
+  - Poison
   layers:
   - Default
   - TransparentFX

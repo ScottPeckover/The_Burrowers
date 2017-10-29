@@ -160,9 +160,9 @@ public class Player_Controller : MonoBehaviour {
                 spriteRenderer.flipX = false;
 
 
-            //Limits speed of player
+            
             if (!isAttacking)
-            {
+            {   //Limits speed of player
                 if (!(Mathf.Abs(rb2d.velocity.x) > maxSpeed))
                 {
                     float moveHorizontal = Input.GetAxis("Horizontal");
@@ -216,6 +216,7 @@ public class Player_Controller : MonoBehaviour {
             else stopAttack();
         } else
         {
+            //Digging rotation
             if (spriteRenderer.flipX == true)
                 spriteRenderer.flipX = false;
             animator.SetInteger(MOVEMENT_STATE, DIGGING);
@@ -296,6 +297,14 @@ public class Player_Controller : MonoBehaviour {
                         UpdateHealth(-20);
                     }
                     
+                    break;
+                case "Poison":
+                    if (!isFlashing)
+                    {
+                        isFlashing = true;
+                        UpdateHealth(-15);
+                    }
+
                     break;
             }
         }
